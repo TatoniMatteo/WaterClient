@@ -1,0 +1,151 @@
+        AppConfiguration appConfiguration = AppConfiguration.getInstance();
+        TextView authText = findViewById(R.id.authText);
+        TextView resultText = findViewById(R.id.resultText);
+        Button stationButton = findViewById(R.id.stationButton);
+        Button sensorButton = findViewById(R.id.sensorButton);
+        Button dataStationButton = findViewById(R.id.dataStationButton);
+        Button dataSensorButton = findViewById(R.id.dataSensorButton);
+
+
+        authText.setText("AUTENTICAZIONE...");
+        appConfiguration
+                .getHttpManager()
+                .login(
+                        "waterapp@example.com",
+                        "app123",
+                        new Callback<>() {
+                            @Override
+                            public void onResponse(@NonNull Call<TokenResponse> call, @NonNull Response<TokenResponse> response) {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    appConfiguration.setToken(response.body().getToken());
+                                    authText.setText("AUTENTICAZIONE RIUSCITA");
+                                } else {
+                                    authText.setText(String.format("AUTENTICAZIONE FALLITA\n%s\n%s", response.code(), response.message()));
+                                }
+
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<TokenResponse> call, @NonNull Throwable t) {
+                                appConfiguration.setToken(null);
+                                authText.setText(String.format("AUTENTICAZIONE FALLITA\n%s", t.getMessage()));
+                            }
+                        });
+
+        stationButton.setOnClickListener(view -> appConfiguration
+                .getHttpManager()
+                .getAllStation(
+                        new Callback<>() {
+
+                            @Override
+                            public void onResponse(@NonNull Call<List<Station>> call, @NonNull Response<List<Station>> response) {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    List<Station> stations = response.body();
+                                    if (!stations.isEmpty()) {
+                                        String list = TextUtils.join("\n\u2022 ", stations);
+                                        resultText.setText("\u2022 " + list);
+                                    } else {
+                                        resultText.setText("NON SONO PRESENTI STAZIONI");
+                                    }
+                                } else {
+                                    resultText.setText(String.format("ERRORE NEL CARICARE LE STAZIONI\n\n%s\n%s", response.code(), response.message()));
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<List<Station>> call, @NonNull Throwable t) {
+                                resultText.setText(String.format("ERRORE NEL CARICARE LE STAZIONI\n\n%s", t.getMessage()));
+                            }
+                        }));
+
+        sensorButton.setOnClickListener(view -> appConfiguration
+                .getHttpManager()
+                .getSensorByStation(
+                        100L,
+                        new Callback<>() {
+                            @Override
+                            public void onResponse(@NonNull Call<List<Sensor>> call, @NonNull Response<List<Sensor>> response) {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    List<Sensor> sensors = response.body();
+                                    if (!sensors.isEmpty()) {
+                                        String list = TextUtils.join("\n\u2022 ", sensors);
+                                        resultText.setText("\u2022 " + list);
+                                    } else {
+                                        resultText.setText("NON SONO PRESENTI SENSORI");
+                                    }
+                                } else {
+                                    resultText.setText(String.format("ERRORE NEL CARICARE I SENSORI\n\n%s\n%s", response.code(), response.message()));
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<List<Sensor>> call, @NonNull Throwable t) {
+                                resultText.setText(String.format("ERRORE NEL CARICARE I SENSORI\n\n%s", t.getMessage()));
+                            }
+                        }));
+
+
+        dataStationButton.setOnClickListener(view -> appConfiguration
+                .getHttpManager()
+                .getRecordByStationAndDate(
+                        100L,
+                        new Date(1675984500000L),
+                        new Date(1675984500000L),
+                        new Callback<>() {
+                            @Override
+                            public void onResponse(@NonNull Call<List<Record>> call, @NonNull Response<List<Record>> response) {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    List<Record> data = response.body();
+                                    if (!data.isEmpty()) {
+                                        String list = TextUtils.join("\n\u2022 ", data);
+                                        resultText.setText("\u2022 " + list);
+                                    } else {
+                                        resultText.setText("NON SONO PRESENTI DATI");
+                                    }
+                                } else {
+                                    resultText.setText(String.format("ERRORE NEL CARICARE I DATI\n\n%s\n%s", response.code(), response.message()));
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<List<Record>> call, @NonNull Throwable t) {
+                                resultText.setText(String.format("ERRORE NEL CARICARE I DATI\n\n%s", t.getMessage()));
+                            }
+                        })
+        );
+
+
+        dataSensorButton.setOnClickListener(view -> appConfiguration
+                .getHttpManager()
+                .getRecordBySensorAndDate(
+                        100L,
+                        50L,
+                        new Date(1675984500000L),
+                        new Date(1675984500000L),
+                        new Callback<>() {
+                            @Override
+                            public void onResponse(@NonNull Call<List<Record>> call, @NonNull Response<List<Record>> response) {
+                                if (response.isSuccessful()) {
+                                    assert response.body() != null;
+                                    List<Record> data = response.body();
+                                    if (!data.isEmpty()) {
+                                        String list = TextUtils.join("\n\u2022 ", data);
+                                        resultText.setText("\u2022 " + list);
+                                    } else {
+                                        resultText.setText("NON SONO PRESENTI DATI");
+                                    }
+                                } else {
+                                    resultText.setText(String.format("ERRORE NEL CARICARE I DATI\n\n%s\n%s", response.code(), response.message()));
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(@NonNull Call<List<Record>> call, @NonNull Throwable t) {
+                                resultText.setText(String.format("ERRORE NEL CARICARE I DATI\n\n%s", t.getMessage()));
+                            }
+                        })
+        );
