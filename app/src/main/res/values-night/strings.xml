@@ -1,5 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">WaterClient</string>
     <string name="list_view">list view</string>
     <string name="grid_view">grid view</string>
     <string name="map_view">map view</string>
